@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farm Login</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    background: url("farm_bg.jpg") no-repeat center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* GLASS CARD */
+.login-card {
+    width: 320px;
+    padding: 25px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+    text-align: center;
+}
+
+/* TITLE */
+.login-card h2 {
+    margin-bottom: 20px;
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+/* INPUT */
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* BUTTON */
+.btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-login {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-google {
+    background: white;
+    border: 1px solid #ddd;
+}
+
+.btn-phone {
+    background: #1976d2;
+    color: white;
+}
+
+.btn-google img {
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.note {
+    font-size: 12px;
+    margin-top: 12px;
+    color: #555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-card">
+    <h2>🌱 Farm Login</h2>
+
+    <input type="text" placeholder="Enter username">
+    <input type="password" placeholder="Enter password">
+
+    <button class="btn btn-login" onclick="loginDemo()">Login</button>
+
+    <hr style="margin:15px 0">
+
+    <button class="btn btn-google" onclick="loginGoogle()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png">
+        Login with Google
+    </button>
+
+    <button class="btn btn-phone" onclick="loginPhone()">
+        📱 Login with Phone
+    </button>
+
+    <div class="note">
+        Demo login only (no real account)
+    </div>
+</div>
+
+<script>
+function loginDemo() {
+    alert("Login demo berhasil");
+}
+
+function loginGoogle() {
+    alert("Google Login (Firebase nanti)");
+}
+
+function loginPhone() {
+    alert("Login nomor HP (OTP)");
+}
+</script>
+
+</body>
+</html>
