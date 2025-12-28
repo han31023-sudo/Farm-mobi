@@ -95,31 +95,56 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="js/firebase-init.js"></script>
 
-<div class="login-card">
-    <h2>🌱 Farm Login</h2>
-
-    <input type="text" placeholder="Enter username">
-    <input type="password" placeholder="Enter password">
-
-    <button class="btn btn-login" onclick="loginDemo()">Login</button>
-
-    <hr style="margin:15px 0">
-
-    <button class="btn btn-google" onclick="loginGoogle()">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png">
-        Login with Google
-    </button>
-
-    <button class="btn btn-phone" onclick="loginPhone()">
-        📱 Login with Phone
-    </button>
-
-    <div class="note">
-        Demo login only (no real account)
-    </div>
-</div>
-
 <script>
+/* DEMO LOGIN */
+function loginDemo() {
+  alert("Login demo berhasil");
+  window.location.href = "game.html";
+}
+
+/* GOOGLE LOGIN */
+function loginGoogle() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider)
+    .then(function (result) {
+      console.log("Google login success", result.user.uid);
+      window.location.href = "game.html";
+    })
+    .catch(function (error) {
+      alert(error.message);
+    });
+}
+
+/* PHONE LOGIN */
+var confirmationResult;
+
+function loginPhone() {
+  var phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
+  if (!phone) return;
+
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      document.createElement("div"),
+      { size: "invisible" }
+    );
+  }
+
+  firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
+    .then(function (result) {
+      confirmationResult = result;
+      var otp = prompt("Masukkan kode OTP");
+      return confirmationResult.confirm(otp);
+    })
+    .then(function () {
+      window.location.href = "game.html";
+    })
+    .catch(function (error) {
+      alert(error.message);
+    });
+}
+</script>
+
+
 function loginDemo() {
     alert("Login demo berhasil");
 }
