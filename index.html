@@ -87,16 +87,23 @@ body {
     color: #555;
 }
 </style>
-    
+    <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 
 <body>
    <div class="login-card">
   <h2>🌱 Farm Login</h2>
        
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="js/firebase-init.js"></script>
+<div class="login-card">
+  <h2>🌱 Farm Login</h2>
+
+  <button onclick="loginDemo()">Login Demo</button>
+  <button onclick="loginGoogle()">Login Google</button>
+  <button onclick="loginPhone()">Login HP</button>
+</div>
+
 
 <script>
 /* DEMO LOGIN */
