@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading Farm</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    background: url("farm_bg.jpg") no-repeat center;
+    background-size: cover;
+    overflow: hidden;
+}
+
+/* AWAN */
+.cloud {
+    position: absolute;
+    top: 10%;
+    width: 200px;
+    opacity: 0.8;
+    animation: cloudMove 30s linear infinite;
+}
+
+.cloud2 {
+    top: 25%;
+    width: 300px;
+    animation-duration: 45s;
+}
+
+@keyframes cloudMove {
+    from { left: -300px; }
+    to { left: 110%; }
+}
+
+/* SAPI / AYAM */
+.animal {
+    position: absolute;
+    bottom: 80px;
+    width: 120px;
+    animation: walk 6s linear infinite;
+}
+
+@keyframes walk {
+    from { left: -150px; }
+    to { left: 110%; }
+}
+
+/* LOADING BOX */
+.loading-box {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    background: rgba(255,255,255,0.85);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* PROGRESS BAR */
+.progress {
+    width: 100%;
+    height: 12px;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #4caf50;
+}
+
+.percent {
+    font-size: 14px;
+    margin-top: 5px;
+    color: #2e7d32;
+}
+</style>
+</head>
+
+<body>
+
+<img src="cloud.png" class="cloud">
+<img src="cloud.png" class="cloud cloud2">
+
+<img src="cow.png" class="animal">
+<!-- ganti cow.png → chicken.png kalau mau ayam -->
+
+<div class="loading-box">
+    🌱 Loading Farm...
+    <div class="progress">
+        <div class="progress-bar" id="bar"></div>
+    </div>
+    <div class="percent" id="percent">0%</div>
+</div>
+
+<script>
+var progress = 0;
+var bar = document.getElementById("bar");
+var percentText = document.getElementById("percent");
+
+var timer = setInterval(function(){
+    progress++;
+    bar.style.width = progress + "%";
+    percentText.innerHTML = progress + "%";
+
+    if(progress >= 100){
+        clearInterval(timer);
+        setTimeout(function(){
+            window.location.href = "game.html";
+        }, 500);
+    }
+}, 40); // total ~4 detik
+</script>
+
+</body>
+</html>
