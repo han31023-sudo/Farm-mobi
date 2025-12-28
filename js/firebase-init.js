@@ -1,3 +1,6 @@
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
 const firebaseConfig = {
   apiKey: "API_KEY_KAMU",
   authDomain: "PROJECT.firebaseapp.com",
@@ -9,4 +12,4 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-
+</script>
