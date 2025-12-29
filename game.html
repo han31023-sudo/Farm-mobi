@@ -13,14 +13,12 @@ html, body {
     display: flex;
     flex-direction: column;
 
-    /* Disable all scroll & touch scroll */
     overflow: hidden;
     touch-action: none;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: auto;
 }
 
-/* ===== TOP HUD ===== */
 .top-bar {
     height: 50px;
     background: #4caf50;
@@ -32,26 +30,27 @@ html, body {
     flex-shrink: 0;
 }
 
-/* ===== FARM ===== */
 .farm-container {
-    flex-grow: 1; /* Fill available space */
+    flex-grow: 1;
     padding: 10px;
-    /* Jangan beri overflow auto atau scroll */
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .farm-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 kolom */
-    grid-template-rows: repeat(7, 1fr);    /* 7 baris */
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(7, minmax(0, 1fr));
     gap: 6px;
     height: 100%;
+    width: 100%;
 }
 
 .plot {
     background: #8d6e63;
     border-radius: 8px;
-    aspect-ratio: 1 / 1; /* Kotak persegi */
+    aspect-ratio: 1 / 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -62,7 +61,6 @@ html, body {
     width: 40px;
 }
 
-/* ===== BOTTOM BAR ===== */
 .bottom-bar {
     height: 65px;
     background: #2e7d32;
@@ -83,7 +81,6 @@ html, body {
     user-select: none;
 }
 
-/* ===== HOME MENU ===== */
 .home-menu {
     position: fixed;
     bottom: 65px;
@@ -112,19 +109,16 @@ html, body {
 
 <body>
 
-<!-- TOP -->
 <div class="top-bar">
     <div>⭐ XP: <span id="xp">0</span></div>
     <div>🪙 Coin: <span id="coin">0</span></div>
     <div>💎 Diamond: <span id="diamond">0</span></div>
 </div>
 
-<!-- FARM -->
 <div class="farm-container" id="content">
     <div class="farm-grid" id="farm"></div>
 </div>
 
-<!-- HOME SUB MENU -->
 <div class="home-menu" id="homeMenu">
     <div onclick="openPage('farm')">🌾<br>Farm</div>
     <div onclick="openPage('silo')">🏚<br>Silo</div>
@@ -132,7 +126,6 @@ html, body {
     <div onclick="openPage('garden')">🌳<br>Taman</div>
 </div>
 
-<!-- BOTTOM -->
 <div class="bottom-bar">
     <div onclick="toggleHome()">🏠<br>Home</div>
     <div onclick="openPage('task')">📋<br>Task</div>
@@ -142,12 +135,10 @@ html, body {
     <div onclick="openPage('pond')">🎣<br>Kolam</div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-// Firebase config & init
 firebase.initializeApp({
     apiKey: "AIzaSyA_7XRkaGbP4tLISCAZwnvQdx2Doa6lbrc",
     authDomain: "block-90d40.firebaseapp.com",
@@ -158,7 +149,6 @@ firebase.initializeApp({
     measurementId: "G-JMDQLHQVM0"
 });
 
-// Cek login user
 firebase.auth().onAuthStateChanged(user => {
     if (user) {
         initGame();
