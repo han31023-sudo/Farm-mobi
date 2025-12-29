@@ -6,55 +6,64 @@
 <title>Farm Login</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
-}
+  * {
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
 
-body {
-  margin: 0;
-  height: 100vh;
-  background: url("farm_bg.png") no-repeat center center;
-  background-size: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  body {
+    margin: 0;
+    height: 100vh;
+    background: url("farm_bg.png") no-repeat center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.login-card {
-  width: 320px;
-  padding: 25px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.78);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.35);
-  text-align: center;
-}
+  .login-card {
+    width: 320px;
+    padding: 25px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+    text-align: center;
+  }
 
-.login-card h2 {
-  margin-bottom: 20px;
-  color: #2e7d32;
-}
+  .login-card h2 {
+    margin-bottom: 20px;
+    color: #2e7d32;
+  }
 
-.btn {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 10px;
-}
+  .btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
 
-.btn-login { background:#4caf50; color:white; }
-.btn-google { background:white; border:1px solid #ddd; }
-.btn-phone { background:#1976d2; color:white; }
+  .btn-login { background:#4caf50; color:white; }
+  .btn-google { background:white; border:1px solid #ddd; }
+  .btn-phone { background:#1976d2; color:white; }
 
-.btn-google img {
-  height: 18px;
-  vertical-align: middle;
-  margin-right: 6x;
-}
+  .btn-google img {
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  /* Pastikan reCAPTCHA container terlihat */
+  #recaptcha-container {
+    margin: 20px auto 0 auto;
+    width: 300px;
+    height: 78px; /* ukuran standar widget reCAPTCHA visible */
+    position: relative;
+    z-index: 1000;
+  }
 </style>
 
 <!-- Firebase SDK -->
@@ -62,15 +71,15 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-firebase.initializeApp({
-  apiKey: "AIzaSyA_7XRkaGbP4tLISCAZwnvQdx2Doa6lbrc",
-  authDomain: "block-90d40.firebaseapp.com",
-  projectId: "block-90d40",
-  storageBucket: "block-90d40.appspot.com",
-  messagingSenderId: "552887299452",
-  appId: "1:552887299452:web:c0769403af5f6abc7388f9",
-  measurementId: "G-JMDQLHQVM0"
-});
+  firebase.initializeApp({
+    apiKey: "AIzaSyA_7XRkaGbP4tLISCAZwnvQdx2Doa6lbrc",
+    authDomain: "block-90d40.firebaseapp.com",
+    projectId: "block-90d40",
+    storageBucket: "block-90d40.appspot.com",
+    messagingSenderId: "552887299452",
+    appId: "1:552887299452:web:c0769403af5f6abc7388f9",
+    measurementId: "G-JMDQLHQVM0"
+  });
 </script>
 
 </head>
@@ -82,75 +91,76 @@ firebase.initializeApp({
   <button class="btn btn-login" onclick="loginDemo()">Login Demo</button>
 
   <button class="btn btn-google" onclick="loginGoogle()">
-  <svg src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
+    <img src="Google_G_Logo.svg" alt="Google Logo" />
     Login Google
   </button>
 
   <button class="btn btn-phone" onclick="loginPhone()">Login HP</button>
+
+  <!-- Tempat reCAPTCHA muncul -->
+  <div id="recaptcha-container"></div>
 </div>
 
-<!-- recaptcha container wajib ada -->
-<div id="recaptcha-container"></div>
-
 <script>
-let recaptchaVerifier;
-let confirmationResult;
+  let recaptchaVerifier;
+  let confirmationResult;
 
-window.onload = function() {
-  recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-    size: 'invisible',
-    callback: () => {
-      console.log('reCAPTCHA solved');
-    },
-    'expired-callback': () => {
-      console.log('reCAPTCHA expired');
-    }
-  });
+  window.onload = function() {
+    // Inisialisasi reCAPTCHA dengan size 'normal' agar muncul visible
+    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'normal',
+      callback: () => {
+        console.log('reCAPTCHA solved');
+      },
+      'expired-callback': () => {
+        console.log('reCAPTCHA expired');
+      }
+    });
 
-  recaptchaVerifier.render().then(widgetId => {
-    console.log('reCAPTCHA widget rendered with id:', widgetId);
-  });
-};
+    recaptchaVerifier.render().then(widgetId => {
+      console.log('reCAPTCHA widget rendered with id:', widgetId);
+    });
+  };
 
-function loginDemo() {
-  alert("Login demo berhasil");
-  window.location.href = "game.html";
-}
-
-function loginGoogle() {
-  var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider)
-    .then(() => window.location.href = "game.html")
-    .catch(e => alert(e.message));
-}
-
-function loginPhone() {
-  const phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
-  if (!phone) return;
-
-  if (!recaptchaVerifier) {
-    alert('reCAPTCHA belum siap, silakan muat ulang halaman');
-    return;
+  function loginDemo() {
+    alert("Login demo berhasil");
+    window.location.href = "game.html";
   }
 
-  firebase.auth().signInWithPhoneNumber(phone, recaptchaVerifier)
-    .then(result => {
-      confirmationResult = result;
-      const otp = prompt("Masukkan kode OTP");
-      return confirmationResult.confirm(otp);
-    })
-    .then(() => window.location.href = "game.html")
-    .catch(error => {
-      alert(error.message);
-      recaptchaVerifier.clear();
-      recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        size: 'invisible',
+  function loginGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    firebase.auth().signInWithPopup(provider)
+      .then(() => window.location.href = "game.html")
+      .catch(e => alert(e.message));
+  }
+
+  function loginPhone() {
+    const phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
+    if (!phone) return;
+
+    if (!recaptchaVerifier) {
+      alert('reCAPTCHA belum siap, silakan muat ulang halaman');
+      return;
+    }
+
+    firebase.auth().signInWithPhoneNumber(phone, recaptchaVerifier)
+      .then(result => {
+        confirmationResult = result;
+        const otp = prompt("Masukkan kode OTP");
+        return confirmationResult.confirm(otp);
+      })
+      .then(() => window.location.href = "game.html")
+      .catch(error => {
+        alert(error.message);
+        // Reset reCAPTCHA jika gagal
+        recaptchaVerifier.clear();
+        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+          size: 'normal'
+        });
+        recaptchaVerifier.render();
       });
-      recaptchaVerifier.render().then(widgetId => {
-        console.log('reCAPTCHA reset and rendered with id:', widgetId);
-      });
-    });
-}
+  }
 </script>
 
 </body>
