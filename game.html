@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <title>Farm Mobi - Game</title>
 
 <style>
@@ -12,7 +12,12 @@ html, body {
     background: #7ec850;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Disable scroll */
+
+    /* Disable all scroll & touch scroll */
+    overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
 }
 
 /* ===== TOP HUD ===== */
@@ -31,7 +36,8 @@ html, body {
 .farm-container {
     flex-grow: 1; /* Fill available space */
     padding: 10px;
-    overflow-y: auto; /* Kalau konten terlalu besar bisa scroll di dalam sini */
+    /* Jangan beri overflow auto atau scroll */
+    overflow: hidden;
 }
 
 .farm-grid {
