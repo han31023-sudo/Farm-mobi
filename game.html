@@ -111,7 +111,7 @@ html, body {
 
 <div class="top-bar">
     <div>⭐ XP: <span id="xp">0</span></div>
-    <div>🪙 Coin: <span id="coin">100</span></div>
+    <div>🪙 Coin: <span id="coin">0</span></div>
     <div>💎 Diamond: <span id="diamond">0</span></div>
 </div>
 
@@ -158,7 +158,7 @@ firebase.auth().onAuthStateChanged(user => {
     }
 });
 
-var coin = 0, xp = 0, diamond = 0;
+var coin = 100, xp = 0, diamond = 0;
 
 function initGame() {
     var farm = document.getElementById("farm");
