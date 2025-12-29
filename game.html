@@ -2,225 +2,540 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-<title>Farm Mobi - Unlock Slot with Level & Coin</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Farm Mobi Full</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    width: 100vw; height: 100vh;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background: #7ec850;
-    display: flex; flex-direction: column;
+  * { box-sizing: border-box; }
+  body,html {
+    margin:0; padding:0; height:100%; overflow:hidden;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background:#7ec850;
+    user-select:none;
   }
+  /* TOP BAR */
   .top-bar {
-    height: 50px;
-    background: #4caf50;
-    color: white;
-    display: flex; justify-content: space-around; align-items: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    user-select: none;
+    position: fixed; top:0; left:0; right:0;
+    height:60px; background:#4caf50; color:#fff;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 12px; font-size:16px; z-index:20;
   }
+  .profile {
+    display:flex; align-items:center; gap:8px; cursor:pointer;
+  }
+  .profile img {
+    width:38px; height:38px; border-radius:50%; border:2px solid white;
+  }
+  .profile span {
+    font-weight:bold;
+  }
+  .xp-bar-container {
+    flex:1; margin:0 12px;
+    background: rgba(255 255 255 / 0.3);
+    border-radius:12px; height:20px; overflow:hidden; position:relative;
+  }
+  .xp-bar-fill {
+    background:#a5d6a7; height:100%; width:0%; transition: width 0.5s ease;
+  }
+  .xp-text {
+    position:absolute; width:100%; top:0; left:0;
+    text-align:center; font-size:14px; line-height:20px;
+    font-weight:bold; color:#2e7d32; user-select:none;
+  }
+  .currencies {
+    display:flex; gap:20px; font-weight:bold; align-items:center;
+  }
+  .currency {
+    display:flex; align-items:center; gap:6px;
+    font-size:18px; color:#fff; cursor:pointer; user-select:none; position:relative;
+  }
+  .currency .amount {
+    min-width:40px; text-align:right;
+  }
+  .btn-plus {
+    background:#fff; color:#4caf50;
+    border-radius:50%; font-weight:bold;
+    width:24px; height:24px; border:none;
+    cursor:pointer; font-size:18px; line-height:18px; padding:0;
+    user-select:none;
+  }
+
+  /* FARM CONTAINER */
   .farm-container {
-    flex-grow: 1;
-    padding: 0;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
+    position: fixed; top:60px; bottom:75px; left:0; right:0;
+    padding:8px; display:flex; justify-content:center; align-items:center;
   }
   .farm-grid {
-    display: grid;
-    grid-template-columns: repeat(5, calc((100vw - 4 * 6px) / 5));
-    grid-template-rows: repeat(7, calc((100vh - 50px - 65px - 6 * 6px) / 7));
-    gap: 6px;
-    width: 100vw;
-    height: calc(100vh - 50px - 65px);
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap:6px;
+    width: 100%;
+    max-width: 600px;
+    height: 100%;
   }
   .plot {
-    background: #8d6e63;
-    border-radius: 8px;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer;
-    position: relative;
-  }
-  .plot.locked {
-    background: #555;
-    cursor: not-allowed;
-    filter: grayscale(70%);
-  }
-  .plot.locked::after {
-    content: "🔒";
-    position: absolute;
-    font-size: 24px;
-    color: #fff;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+    background:#8d6e63; border-radius:8px;
+    position:relative; cursor:pointer; overflow:hidden;
   }
   .plot img {
-    max-width: 80%;
-    height: auto;
-    pointer-events: none;
+    width: 100%; height: 100%; object-fit: contain;
+    pointer-events:none; user-select:none;
   }
+  .progress-bar {
+    position: absolute; bottom:4px; left:4px; right:4px;
+    height:8px; background: rgba(255 255 255 / 0.5);
+    border-radius:4px;
+  }
+  .progress-fill {
+    height:100%; background:#4caf50; width:0%;
+    border-radius:4px; transition: width 0.3s ease;
+  }
+  .locked-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+    color: white; font-weight: bold;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    font-size: 14px; pointer-events:none;
+    text-align:center;
+    line-height: 1.2;
+  }
+
+  /* BOTTOM BAR */
   .bottom-bar {
-    height: 65px;
-    background: #2e7d32;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    color: white;
-    font-size: 16px;
-    flex-shrink: 0;
-    user-select: none;
+    position: fixed; bottom:0; left:0; right:0;
+    height: 75px; background:#2e7d32;
+    display: flex; justify-content: space-around;
+    align-items: center; color:white;
+    font-size: 12px; z-index: 20;
+    user-select:none;
   }
   .bottom-bar div {
-    padding: 8px 0;
-    text-align: center;
-    cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; cursor:pointer;
+    flex: 1; padding: 4px 0;
+    font-weight: 600;
   }
-  .unlock-btn {
-    background: #ffa000;
-    border: none;
-    color: white;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    user-select: none;
+  .bottom-bar div:hover {
+    background: rgba(255 255 255 / 0.15);
+  }
+  .bottom-bar div img {
+    width: 24px; height: 24px; margin-bottom: 4px; user-select:none;
+  }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none; justify-content:center; align-items:center;
+    z-index: 100;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: white; border-radius: 12px;
+    padding: 12px; max-width: 360px;
+    width: 100%; max-height: 80vh;
+    overflow-y: auto; user-select:none;
+  }
+  .modal h3 {
+    margin-top: 0; margin-bottom: 12px;
+    color: #2e7d32; text-align:center;
+  }
+  .item-row {
+    display: flex; gap: 12px;
+    margin-bottom: 12px;
+    cursor: pointer; align-items: center;
+  }
+  .item-row img {
+    width: 48px; height: 48px;
+    object-fit: contain; border-radius: 8px;
+  }
+  .item-info {
+    flex: 1;
+  }
+  .item-name {
+    font-weight: 700; font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .item-price {
+    font-weight: 600; color: #4caf50;
+  }
+  .item-desc {
+    white-space: pre-wrap;
+    font-size: 13px; color: #444;
     margin-top: 8px;
+  }
+  .modal button {
+    margin-top: 8px;
+    background: #4caf50; border: none;
+    border-radius: 8px; padding: 10px;
+    color: white; font-weight: 700;
+    width: 100%; cursor: pointer;
+    user-select:none;
   }
 </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <div>⭐ XP: <span id="xp">0</span></div>
-    <div>🪙 Coin: <span id="coin">100</span></div>
-    <div>💎 Diamond: <span id="diamond">0</span></div>
-    <div>🔰 Level: <span id="level">1</span></div>
+<div class="top-bar">
+  <div class="profile" onclick="goToProfile()">
+    <img src="assets/profile.png" alt="Profil" />
+    <span id="levelText">Lvl 1</span>
   </div>
+  <div class="xp-bar-container" title="Progress Level">
+    <div class="xp-bar-fill" id="xpBarFill"></div>
+    <div class="xp-text" id="xpText">0 / 100 XP</div>
+  </div>
+  <div class="currencies">
+    <div class="currency" onclick="openShop('coin')" title="Beli Koin">
+      🪙 <span class="amount" id="coinAmount">10</span>
+      <button class="btn-plus" onclick="openShop('coin'); event.stopPropagation();">+</button>
+    </div>
+    <div class="currency" onclick="openShop('diamond')" title="Beli Diamond">
+      💎 <span class="amount" id="diamondAmount">0</span>
+      <button class="btn-plus" onclick="openShop('diamond'); event.stopPropagation();">+</button>
+    </div>
+  </div>
+</div>
 
-  <div class="farm-container" id="content">
-    <div class="farm-grid" id="farm"></div>
-    <button class="unlock-btn" id="unlockBtn">Unlock Slot Land Berikutnya</button>
-  </div>
+<div class="farm-container">
+  <div class="farm-grid" id="farmGrid"></div>
+</div>
 
-  <div class="bottom-bar">
-    <div onclick="alert('Home clicked')">🏠<br>Home</div>
-    <div onclick="alert('Task clicked')">📋<br>Task</div>
-    <div onclick="alert('Ternak clicked')">🐄<br>Ternak</div>
-    <div onclick="alert('Chat clicked')">💬<br>Chat</div>
-    <div onclick="alert('Rank clicked')">🏆<br>Rank</div>
-    <div onclick="alert('Kolam clicked')">🎣<br>Kolam</div>
+<div class="bottom-bar">
+  <div onclick="openPage('task')"><img src="assets/icons/task.png" alt="Task" />Task</div>
+  <div onclick="openShop()"><img src="assets/icons/shop.png" alt="Shop" />Shop</div>
+  <div onclick="openPage('leaderboard')"><img src="assets/icons/leaderboard.png" alt="Leaderboard" />Rank</div>
+  <div onclick="openPage('home')"><img src="assets/icons/home.png" alt="Home" />Home</div>
+  <div onclick="openPage('pond')"><img src="assets/icons/pond.png" alt="Kolam" />Kolam</div>
+  <div onclick="openPage('guild')"><img src="assets/icons/guild.png" alt="Guild" />Guild</div>
+  <div onclick="openPage('chat')"><img src="assets/icons/chat.png" alt="Chat" />Chat</div>
+</div>
+
+<!-- Modal Tanam -->
+<div class="modal-backdrop" id="modalCrop">
+  <div class="modal">
+    <h3>Pilih Tanaman</h3>
+    <div id="cropList"></div>
+    <div class="item-desc" id="cropDesc">Klik tanaman untuk lihat keterangan, double klik untuk tanam.</div>
+    <button onclick="closeModal('modalCrop')">Tutup</button>
   </div>
+</div>
+
+<!-- Modal Pupuk -->
+<div class="modal-backdrop" id="modalFertilizer">
+  <div class="modal">
+    <h3>Pilih Pupuk</h3>
+    <div id="fertList"></div>
+    <div class="item-desc" id="fertDesc">Klik pupuk untuk lihat keterangan, double klik untuk pakai.</div>
+    <button onclick="closeModal('modalFertilizer')">Tutup</button>
+  </div>
+</div>
 
 <script>
-  let coin = 100, xp = 0, diamond = 0;
+  // Data tanaman
+  const crops = {
+    bayam: {name:"Bayam", price:1, xp:1, duration:3600000, desc:"Waktu tanam 1 jam.", img:"assets/crops/bayam.png"},
+    brokoli: {name:"Brokoli", price:2, xp:2, duration:3600000, desc:"Waktu tanam 1 jam.", img:"assets/crops/brokoli.png"},
+    wortel: {name:"Wortel", price:4, xp:4, duration:3600000, desc:"Waktu tanam 1 jam.", img:"assets/crops/wortel.png"},
+    kangkung: {name:"Kangkung", price:5, xp:5, duration:3600000, desc:"Waktu tanam 1 jam.", img:"assets/crops/kangkung.png"},
+    sawi: {name:"Sawi", price:8, xp:8, duration:5400000, desc:"Waktu tanam 1.5 jam.", img:"assets/crops/sawi.png"},
+    kubis: {name:"Kubis", price:10, xp:10, duration:5400000, desc:"Waktu tanam 1.5 jam.", img:"assets/crops/kubis.png"},
+    kentang: {name:"Kentang", price:15, xp:15, duration:7200000, desc:"Waktu tanam 2 jam.", img:"assets/crops/kentang.png"},
+    tomat: {name:"Tomat", price:20, xp:20, duration:9000000, desc:"Waktu tanam 2.5 jam.", img:"assets/crops/tomat.png"},
+    mentimun: {name:"Mentimun", price:25, xp:25, duration:14400000, desc:"Waktu tanam 4 jam.", img:"assets/crops/mentimun.png"},
+    terong: {name:"Terong", price:30, xp:30, duration:14400000, desc:"Waktu tanam 4 jam.", img:"assets/crops/terong.png"},
+    bawang_merah: {name:"Bawang Merah", price:50, xp:50, duration:21600000, desc:"Waktu tanam 6 jam.", img:"assets/crops/bawang_merah.png"},
+    bawang_putih: {name:"Bawang Putih", price:60, xp:60, duration:21600000, desc:"Waktu tanam 6 jam.", img:"assets/crops/bawang_putih.png"},
+    jahe: {name:"Jahe", price:100, xp:100, duration:28800000, desc:"Waktu tanam 8 jam.", img:"assets/crops/jahe.png"},
+    labu: {name:"Labu", price:125, xp:125, duration:43200000, desc:"Waktu tanam 12 jam.", img:"assets/crops/labu.png"},
+  };
+
+  // Data pupuk
+  const fertilizers = [
+    {name:"Pupuk 1", price:1, xp:1, reduce:1800000, unlockLevel:1, useDiamond:false, desc:"Mengurangi waktu tanam 30 menit.", img:"assets/fertilizers/pupuk1.png"},
+    {name:"Pupuk 2", price:5, xp:5, reduce:3600000, unlockLevel:5, useDiamond:false, desc:"Mengurangi waktu tanam 1 jam.", img:"assets/fertilizers/pupuk2.png"},
+    {name:"Pupuk 3", price:50, xp:10, reduce:7200000, unlockLevel:10, useDiamond:false, desc:"Mengurangi waktu tanam 2 jam.", img:"assets/fertilizers/pupuk3.png"},
+    {name:"Pupuk 4", price:200, xp:70, reduce:28800000, unlockLevel:15, useDiamond:false, desc:"Mengurangi waktu tanam 8 jam.", img:"assets/fertilizers/pupuk4.png"},
+    {name:"Pupuk 5", price:1, xp:250, reduce:86400000, unlockLevel:20, useDiamond:true, desc:"Mengurangi waktu tanam 1 hari.", img:"assets/fertilizers/pupuk5.png"},
+  ];
+
+  let coin = 10;
+  let diamond = 0;
+  let xp = 0;
   let level = 1;
-  let unlockedSlots = 5; // awalnya 5 slot unlocked
+  const maxLevel = 35;
+  // Farm plot state
+  let farmPlots = Array(35).fill(null).map(() => ({
+    plantedCrop: null,
+    plantedAt: 0,
+    wateredAt: null,
+    fertilizedAt: null,
+    waterCooldownEnd: 0,
+    fertilizerCooldownEnd: 0
+  }));
 
-  function initGame() {
-    const farm = document.getElementById("farm");
-    farm.innerHTML = "";
+  let selectedPlotIndex = null;
 
-    for(let i=0; i<35; i++) {
+  function updateLevel() {
+    let xpNeeded = level * 100;
+    while (xp >= xpNeeded && level < maxLevel) {
+      xp -= xpNeeded;
+      level++;
+      xpNeeded = level * 100;
+    }
+    const nextLevelXP = level * 100;
+    const percent = Math.min(100, (xp / nextLevelXP) * 100);
+    document.getElementById("xpBarFill").style.width = percent + "%";
+    document.getElementById("xpText").innerText = `${xp} / ${nextLevelXP} XP`;
+    document.getElementById("levelText").innerText = "Lvl " + level;
+  }
+
+  function renderUI() {
+    document.getElementById("coinAmount").innerText = coin;
+    document.getElementById("diamondAmount").innerText = diamond;
+  }
+
+  function renderFarm() {
+    const farmGrid = document.getElementById("farmGrid");
+    farmGrid.innerHTML = "";
+    for (let i = 0; i < 35; i++) {
       const plot = document.createElement("div");
       plot.className = "plot";
 
-      if(i >= unlockedSlots) {
-        plot.classList.add("locked");
+      // Unlock cek
+      if (i >= 5) {
+        const reqLevel = i + 1;
+        const reqCoin = (i - 4) * 100;
+        if (level < reqLevel || coin < reqCoin) {
+          plot.innerHTML = `<div class="locked-overlay">Locked<br>Lvl ${reqLevel}<br>🪙${reqCoin}</div>`;
+          plot.style.cursor = "not-allowed";
+          farmGrid.appendChild(plot);
+          continue;
+        }
       }
 
-      plot.setAttribute("data", "0");
-      plot.setAttribute("data-index", i);
-      plot.innerHTML = '<img src="assets/shovel.png" alt="shovel">';
-      plot.onclick = function() {
-        if (i < unlockedSlots) {
-          farmAction(this);
+      const data = farmPlots[i];
+      if (data.plantedCrop) {
+        const crop = crops[data.plantedCrop];
+        const now = Date.now();
+        const elapsed = now - data.plantedAt;
+        let duration = crop.duration;
+
+        // Reduksi waktu pupuk dan siram
+        let reduction = 0;
+        if (data.wateredAt) reduction += 15 * 60000; // 15 menit siram
+        if (data.fertilizedAt) {
+          // Bisa diupdate sesuai pupuk yang dipakai, contoh disini 0
+          reduction += 0;
+        }
+        duration -= reduction;
+        if (duration < 0) duration = 0;
+
+        const progressPercent = Math.min(100, (elapsed / duration) * 100);
+        plot.innerHTML = `
+          <img src="${crop.img}" alt="${crop.name}" title="${crop.name}" />
+          <div class="progress-bar"><div class="progress-fill" style="width:${progressPercent}%;"></div></div>
+        `;
+      } else {
+        plot.innerHTML = '<img src="assets/soil.png" alt="Tanah" title="Tanah kosong" />';
+      }
+
+      plot.onclick = () => {
+        if (i >= 5) {
+          const reqLevel = i + 1;
+          const reqCoin = (i - 4) * 100;
+          if (level < reqLevel) {
+            alert(`Plot terkunci, perlu level ${reqLevel}`);
+            return;
+          }
+          if (coin < reqCoin) {
+            alert(`Plot terkunci, perlu koin ${reqCoin}`);
+            return;
+          }
+        }
+        selectedPlotIndex = i;
+        if (farmPlots[i].plantedCrop) {
+          alert("Plot sudah ada tanaman, sedang tahap tumbuh");
         } else {
-          alert("Slot ini terkunci, silakan unlock dulu.");
+          openModal('modalCrop');
         }
       };
-      farm.appendChild(plot);
-    }
 
-    document.getElementById("coin").innerText = coin;
-    document.getElementById("xp").innerText = xp;
-    document.getElementById("diamond").innerText = diamond;
-    document.getElementById("level").innerText = level;
-
-    updateUnlockBtn();
-  }
-
-  function farmAction(plot) {
-    const img = plot.querySelector("img");
-    const state = plot.getAttribute("data");
-
-    if(state === "0") {
-      img.src = "assets/water.png";
-      plot.setAttribute("data","1");
-    } else if(state === "1") {
-      img.src = "assets/fertilizer.png";
-      plot.setAttribute("data","2");
-    } else if(state === "2") {
-      img.src = "assets/sickle.png";
-      plot.setAttribute("data","3");
-    } else {
-      img.src = "assets/shovel.png";
-      plot.setAttribute("data","0");
-      coin += 10;
-      xp += 2;
-      // Update level sesuai XP (misal level naik tiap 20 xp)
-      let newLevel = Math.floor(xp / 20) + 1;
-      if(newLevel > level) level = newLevel;
-
-      document.getElementById("coin").innerText = coin;
-      document.getElementById("xp").innerText = xp;
-      document.getElementById("level").innerText = level;
+      farmGrid.appendChild(plot);
     }
   }
 
-  function updateUnlockBtn() {
-    const btn = document.getElementById("unlockBtn");
+  // Modal fungsi
+  function openModal(id) {
+    document.getElementById(id).classList.add('active');
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
 
-    if (unlockedSlots >= 35) {
-      btn.style.display = "none"; // sudah full unlock, sembunyikan tombol
+  // Load daftar tanaman ke modal
+  function loadCropList() {
+    const cropList = document.getElementById("cropList");
+    cropList.innerHTML = "";
+    for (const key in crops) {
+      const c = crops[key];
+      const div = document.createElement("div");
+      div.className = "item-row";
+      div.innerHTML = `
+        <img src="${c.img}" alt="${c.name}" />
+        <div class="item-info">
+          <div class="item-name">${c.name}</div>
+          <div class="item-price">Harga: 🪙${c.price} | XP: ${c.xp}</div>
+        </div>
+      `;
+
+      let clickCount = 0;
+      let clickTimer = null;
+
+      div.onclick = () => {
+        clickCount++;
+        if (clickCount === 1) {
+          document.getElementById("cropDesc").innerText = `${c.name}\nHarga: 🪙${c.price}\nXP: ${c.xp}\nDurasi: ${Math.floor(c.duration/60000)} menit\n${c.desc}`;
+          clickTimer = setTimeout(() => { clickCount = 0; }, 300);
+        } else if (clickCount === 2) {
+          clearTimeout(clickTimer);
+          // Tanam kalau cukup koin
+          if (coin < c.price) {
+            alert("Koin tidak cukup!");
+            clickCount = 0;
+            return;
+          }
+          coin -= c.price;
+          farmPlots[selectedPlotIndex] = {
+            plantedCrop: key,
+            plantedAt: Date.now(),
+            wateredAt: null,
+            fertilizedAt: null,
+            waterCooldownEnd: 0,
+            fertilizerCooldownEnd: 0
+          };
+          xp += c.xp;
+          updateLevel();
+          renderUI();
+          renderFarm();
+          closeModal('modalCrop');
+          clickCount = 0;
+        }
+      };
+
+      cropList.appendChild(div);
+    }
+  }
+
+  // Modal pupuk
+  function loadFertilizerList() {
+    const fertList = document.getElementById("fertList");
+    fertList.innerHTML = "";
+    for (const fert of fertilizers) {
+      if (level < fert.unlockLevel) continue; // hanya yang unlock
+      const div = document.createElement("div");
+      div.className = "item-row";
+      div.innerHTML = `
+        <img src="${fert.img}" alt="${fert.name}" />
+        <div class="item-info">
+          <div class="item-name">${fert.name}</div>
+          <div class="item-price">Harga: ${fert.useDiamond ? "💎" : "🪙"}${fert.price} | XP: ${fert.xp}</div>
+        </div>
+      `;
+
+      let clickCount = 0;
+      let clickTimer = null;
+
+      div.onclick = () => {
+        clickCount++;
+        if (clickCount === 1) {
+          document.getElementById("fertDesc").innerText = `${fert.name}\nHarga: ${fert.useDiamond ? "💎" : "🪙"}${fert.price}\nXP: ${fert.xp}\nMengurangi waktu tanam: ${Math.floor(fert.reduce/60000)} menit\n${fert.desc}`;
+          clickTimer = setTimeout(() => { clickCount = 0; }, 300);
+        } else if (clickCount === 2) {
+          clearTimeout(clickTimer);
+          // pakai pupuk ke plot terpilih
+          if (selectedPlotIndex === null) {
+            alert("Pilih plot terlebih dahulu");
+            clickCount = 0;
+            return;
+          }
+          if (!farmPlots[selectedPlotIndex].plantedCrop) {
+            alert("Plot belum ditanami");
+            clickCount = 0;
+            return;
+          }
+          // cek cooldown pupuk
+          const now = Date.now();
+          if (farmPlots[selectedPlotIndex].fertilizerCooldownEnd > now) {
+            alert("Cooldown pupuk masih berjalan");
+            clickCount = 0;
+            return;
+          }
+          if (fert.useDiamond) {
+            if (diamond < fert.price) {
+              alert("Diamond tidak cukup");
+              clickCount = 0;
+              return;
+            }
+            diamond -= fert.price;
+          } else {
+            if (coin < fert.price) {
+              alert("Koin tidak cukup");
+              clickCount = 0;
+              return;
+            }
+            coin -= fert.price;
+          }
+
+          // Kurangi waktu tanam dengan durasi pupuk
+          farmPlots[selectedPlotIndex].fertilizedAt = now;
+          farmPlots[selectedPlotIndex].fertilizerCooldownEnd = now + 60000; // contoh cooldown 1 menit
+          // Kita kurangi waktu tanam pada durasi crop dengan property reduce nanti dihitung di renderFarm
+
+          xp += fert.xp;
+          updateLevel();
+          renderUI();
+          renderFarm();
+          closeModal('modalFertilizer');
+          clickCount = 0;
+        }
+      };
+
+      fertList.appendChild(div);
+    }
+  }
+
+  // Fungsi buka shop default (tanaman)
+  function openShop(type = 'crop') {
+    if (type === 'coin' || type === 'diamond') {
+      alert(`Fungsi beli ${type} belum tersedia.`);
       return;
     }
-
-    const nextPlot = unlockedSlots + 1; // plot berikutnya (1-based)
-    const requiredLevel = nextPlot;      // minimal level sama dengan nomor plot
-    const requiredCoin = (nextPlot - 5) * 100;
-
-    btn.style.display = "block";
-    btn.innerText = `Unlock Slot Land #${nextPlot} (Butuh Level ${requiredLevel} & ${requiredCoin} 🪙) - Saat ini: ${unlockedSlots}/35`;
-
-    // Aktifkan tombol jika level & coin cukup
-    btn.disabled = (level < requiredLevel || coin < requiredCoin);
+    if (type === 'crop') openModal('modalCrop');
+    else if (type === 'fertilizer') openModal('modalFertilizer');
   }
 
-  document.getElementById("unlockBtn").onclick = function() {
-    if (unlockedSlots >= 35) return;
+  // Fungsi buka halaman (placeholder)
+  function openPage(name) {
+    alert("Buka halaman: " + name);
+  }
 
-    const nextPlot = unlockedSlots + 1;
-    const requiredLevel = nextPlot;
-    const requiredCoin = (nextPlot - 5) * 100;
+  function goToProfile() {
+    alert("Buka Profil");
+  }
 
-    if(level >= requiredLevel && coin >= requiredCoin) {
-      coin -= requiredCoin;
-      unlockedSlots++;
-      document.getElementById("coin").innerText = coin;
+  // Init
+  function init() {
+    updateLevel();
+    renderUI();
+    renderFarm();
+    loadCropList();
+    loadFertilizerList();
+  }
 
-      initGame();
-    } else {
-      alert(`Tidak bisa unlock slot #${nextPlot}. Butuh Level ${requiredLevel} dan ${requiredCoin} 🪙.`);
-    }
-  };
+  init();
 
-  window.onload = initGame;
 </script>
 
 </body>
