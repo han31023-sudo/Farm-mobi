@@ -89,10 +89,29 @@ firebase.initializeApp({
   <button class="btn btn-phone" onclick="loginPhone()">Login HP</button>
 </div>
 
-<!-- Container reCAPTCHA yang diperlukan -->
+<!-- recaptcha container wajib ada -->
 <div id="recaptcha-container"></div>
 
 <script>
+let recaptchaVerifier;
+let confirmationResult;
+
+window.onload = function() {
+  recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    size: 'invisible',
+    callback: () => {
+      console.log('reCAPTCHA solved');
+    },
+    'expired-callback': () => {
+      console.log('reCAPTCHA expired');
+    }
+  });
+
+  recaptchaVerifier.render().then(widgetId => {
+    console.log('reCAPTCHA widget rendered with id:', widgetId);
+  });
+};
+
 function loginDemo() {
   alert("Login demo berhasil");
   window.location.href = "game.html";
@@ -106,35 +125,31 @@ function loginGoogle() {
 }
 
 function loginPhone() {
-  var phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
+  const phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
   if (!phone) return;
 
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-      size: 'invisible',
-      callback: function(response) {
-        console.log('reCAPTCHA solved');
-      },
-      'expired-callback': function() {
-        console.log('reCAPTCHA expired, silakan verifikasi ulang');
-      }
-    });
+  if (!recaptchaVerifier) {
+    alert('reCAPTCHA belum siap, silakan muat ulang halaman');
+    return;
   }
 
-  window.recaptchaVerifier.render().then(function(widgetId) {
-    window.recaptchaWidgetId = widgetId;
-
-    firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
-      .then(function(confirmationResult) {
-        var otp = prompt("Masukkan kode OTP");
-        return confirmationResult.confirm(otp);
-      })
-      .then(() => window.location.href = "game.html")
-      .catch(function(error) {
-        alert(error.message);
-        window.recaptchaVerifier.reset(window.recaptchaWidgetId);
+  firebase.auth().signInWithPhoneNumber(phone, recaptchaVerifier)
+    .then(result => {
+      confirmationResult = result;
+      const otp = prompt("Masukkan kode OTP");
+      return confirmationResult.confirm(otp);
+    })
+    .then(() => window.location.href = "game.html")
+    .catch(error => {
+      alert(error.message);
+      recaptchaVerifier.clear();
+      recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'invisible',
       });
-  });
+      recaptchaVerifier.render().then(widgetId => {
+        console.log('reCAPTCHA reset and rendered with id:', widgetId);
+      });
+    });
 }
 </script>
 
