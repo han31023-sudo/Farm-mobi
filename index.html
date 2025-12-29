@@ -7,164 +7,118 @@
 
 <style>
 * {
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 body {
-    margin: 0;
-    height: 100vh;
-    background: url("farm_bg.jpg") no-repeat center center;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  margin: 0;
+  height: 100vh;
+  background: url("farm_bg.jpg") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* GLASS CARD */
 .login-card {
-    width: 320px;
-    padding: 25px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
-    text-align: center;
+  width: 320px;
+  padding: 25px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+  text-align: center;
 }
 
-/* TITLE */
 .login-card h2 {
-    margin-bottom: 20px;
-    color: #2e7d32;
-    font-weight: bold;
+  margin-bottom: 20px;
+  color: #2e7d32;
 }
 
-/* INPUT */
-.login-card input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-
-/* BUTTON */
 .btn {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    font-size: 15px;
-    cursor: pointer;
-    margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
-.btn-login {
-    background: #4caf50;
-    color: white;
-}
-
-.btn-google {
-    background: white;
-    border: 1px solid #ddd;
-}
-
-.btn-phone {
-    background: #1976d2;
-    color: white;
-}
+.btn-login { background:#4caf50; color:white; }
+.btn-google { background:white; border:1px solid #ddd; }
+.btn-phone { background:#1976d2; color:white; }
 
 .btn-google img {
-    height: 18px;
-    vertical-align: middle;
-    margin-right: 6px;
-}
-
-.note {
-    font-size: 12px;
-    margin-top: 12px;
-    color: #555;
+  height: 18px;
+  vertical-align: middle;
+  margin-right: 6px;
 }
 </style>
-    <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+/* FIREBASE CONFIG */
+firebase.initializeApp({
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI.firebaseapp.com",
+  projectId: "ISI",
+  appId: "ISI",
+  messagingSenderId: "ISI"
+});
+</script>
+
 </head>
 
 <body>
-   <div class="login-card">
-  <h2>🌱 Farm Login</h2>
-       
+
 <div class="login-card">
   <h2>🌱 Farm Login</h2>
 
-  <button onclick="loginDemo()">Login Demo</button>
-  <button onclick="loginGoogle()">Login Google</button>
-  <button onclick="loginPhone()">Login HP</button>
+  <button class="btn btn-login" onclick="loginDemo()">Login Demo</button>
+
+  <button class="btn btn-google" onclick="loginGoogle()">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg">
+    Login Google
+  </button>
+
+  <button class="btn btn-phone" onclick="loginPhone()">Login HP</button>
 </div>
 
-
+<!-- ✅ JAVASCRIPT DI TEMPAT YANG BENAR -->
 <script>
-/* DEMO LOGIN */
 function loginDemo() {
   alert("Login demo berhasil");
   window.location.href = "game.html";
 }
 
-/* GOOGLE LOGIN */
 function loginGoogle() {
   var provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithPopup(provider)
-    .then(function (result) {
-      console.log("Google login success", result.user.uid);
-      window.location.href = "game.html";
-    })
-    .catch(function (error) {
-      alert(error.message);
-    });
+    .then(() => window.location.href = "game.html")
+    .catch(e => alert(e.message));
 }
-
-/* PHONE LOGIN */
-var confirmationResult;
 
 function loginPhone() {
   var phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
   if (!phone) return;
 
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-      document.createElement("div"),
-      { size: "invisible" }
-    );
-  }
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+    document.createElement("div"),
+    { size: "invisible" }
+  );
 
   firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
-    .then(function (result) {
-      confirmationResult = result;
+    .then(result => {
       var otp = prompt("Masukkan kode OTP");
-      return confirmationResult.confirm(otp);
+      return result.confirm(otp);
     })
-    .then(function () {
-      window.location.href = "game.html";
-    })
-    .catch(function (error) {
-      alert(error.message);
-    });
-}
-</script>
-
-
-function loginDemo() {
-    alert("Login demo berhasil");
-}
-
-function loginGoogle() {
-    alert("Google Login (Firebase nanti)");
-}
-
-function loginPhone() {
-    alert("Login nomor HP (OTP)");
+    .then(() => window.location.href = "game.html")
+    .catch(e => alert(e.message));
 }
 </script>
 
