@@ -27,18 +27,23 @@ window.loginGoogle = function () {
 };
 
 // PHONE LOGIN
+
+// Inisialisasi RecaptchaVerifier hanya sekali
+if (!window.recaptchaVerifier) {
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    "recaptcha-container",
+    { size: "invisible" },
+    auth
+  );
+}
+
 let confirmationResult;
 
 window.loginPhone = function () {
   const phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
   if (!phone) return;
 
-  window.recaptchaVerifier = new RecaptchaVerifier(
-    "recaptcha-container",
-    { size: "invisible" },
-    auth
-  );
-
+  // Gunakan instance recaptchaVerifier yang sudah ada
   signInWithPhoneNumber(auth, phone, window.recaptchaVerifier)
     .then((result) => {
       confirmationResult = result;
@@ -50,5 +55,12 @@ window.loginPhone = function () {
     })
     .catch((error) => {
       alert(error.message);
+      // Jika perlu, reset recaptcha agar bisa dipakai ulang
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "invisible" },
+        auth
+      );
     });
 };
