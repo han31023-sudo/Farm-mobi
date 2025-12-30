@@ -21,7 +21,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-  // Konfigurasi Firebase Anda
+  // 2. KONFIGURASI FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyA_7XRkaGbP4tLISCAZwnvQdx2Doa6lbrc",
     authDomain: "block-90d40.firebaseapp.com",
@@ -33,8 +33,8 @@
   };
   firebase.initializeApp(firebaseConfig);
 </script>
-
 </head>
+
 <body>
 
 <div class="login-card">
@@ -60,38 +60,38 @@
   let recaptchaVerifier;
   let confirmationResult;
 
-  // --- FUNGSI LOGIN GOOGLE (Diletakkan di luar agar bisa dipanggil onclick) ---
+  // --- A. LOGIKA LOGIN GOOGLE (VERSI REDIRECT) ---
   function loginGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
-
-    // Coba pake Pop-up dulu
-    firebase.auth().signInWithPopup(provider)
-      .then((result) => {
-        console.log("Sukses Login Google");
-        window.location.href = "game.html";
-      })
-      .catch((error) => {
-        console.error("Popup gagal, mencoba redirect...", error.message);
-        // Jika Popup diblokir browser, gunakan Redirect
-        firebase.auth().signInWithRedirect(provider);
-      });
+    
+    // Langsung pindah halaman ke Google
+    firebase.auth().signInWithRedirect(provider);
   }
 
-  // Cek hasil redirect (jika login redirect digunakan)
-  firebase.auth().getRedirectResult().then((result) => {
-    if (result && result.user) {
-      window.location.href = "game.html";
-    }
-  });
+  // --- B. CEK APAKAH USER BARU BALIK DARI LOGIN GOOGLE ---
+  // Kode ini akan otomatis jalan saat halaman terbuka kembali
+  firebase.auth().getRedirectResult()
+    .then((result) => {
+      if (result && result.user) {
+        console.log("Login Google Berhasil!");
+        window.location.href = "game.html"; // Pindah ke game
+      }
+    })
+    .catch((error) => {
+      console.error("Gagal Login:", error.message);
+      if (error.code === 'auth/unauthorized-domain') {
+        alert("Error: Link GitHub belum didaftarkan di Firebase Console!");
+      }
+    });
 
-  // --- FUNGSI LOGIN DEMO ---
+  // --- C. LOGIN DEMO ---
   function loginDemo() {
     alert("Masuk sebagai tamu...");
     window.location.href = "game.html";
   }
 
-  // --- FUNGSI LOGIN PHONE ---
+  // --- D. LOGIN HP ---
   function loginPhone() {
     const phone = prompt("Masukkan nomor HP (Contoh: +62812345678)");
     if (!phone) return;
@@ -106,11 +106,11 @@
         window.location.href = "game.html";
       })
       .catch(error => {
-        alert("Gagal: " + error.message);
+        alert("Gagal HP: " + error.message);
       });
   }
 
-  // Inisialisasi reCAPTCHA saat halaman dimuat
+  // Jalankan reCAPTCHA
   window.onload = function() {
     recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
       size: 'normal'
