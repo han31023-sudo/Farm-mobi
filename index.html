@@ -6,22 +6,23 @@
 <title>Farm Login</title>
 
 <style>
-  /* ... gaya seperti sebelumnya, untuk singkat saya skip di sini ... */
-  body { font-family: Arial, sans-serif; background: #eef; display: flex; justify-content: center; align-items: center; height: 100vh; }
-  .login-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #ccc; width: 320px; text-align: center; }
-  .btn { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #7ec850; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+  .login-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; }
+  h2 { color: #2e7d32; margin-bottom: 20px; }
+  .btn { width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+  .btn:hover { opacity: 0.9; transform: translateY(-2px); }
   .btn-google { background: white; border: 1px solid #ddd; color: #444; }
   .btn-phone { background: #1976d2; color: white; }
   .btn-login { background: #4caf50; color: white; }
-  #recaptcha-container { margin: 20px auto; width: 300px; height: 78px; }
+  #recaptcha-container { margin: 15px auto; }
 </style>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-  firebase.initializeApp({
+  // Konfigurasi Firebase Anda
+  const firebaseConfig = {
     apiKey: "AIzaSyA_7XRkaGbP4tLISCAZwnvQdx2Doa6lbrc",
     authDomain: "block-90d40.firebaseapp.com",
     projectId: "block-90d40",
@@ -29,7 +30,8 @@
     messagingSenderId: "552887299452",
     appId: "1:552887299452:web:c0769403af5f6abc7388f9",
     measurementId: "G-JMDQLHQVM0"
-  });
+  };
+  firebase.initializeApp(firebaseConfig);
 </script>
 
 </head>
@@ -38,14 +40,18 @@
 <div class="login-card">
   <h2>🌱 Farm Login</h2>
 
-  <button class="btn btn-login" onclick="loginDemo()">Login Demo</button>
-
-  <button class="btn btn-google" onclick="loginGoogle()">
-    <img src="Google_G_Logo.svg" alt="Google Logo" style="height:24px; vertical-align:middle; margin-right:8px;">
-    Login Google
+  <button class="btn btn-login" onclick="loginDemo()">
+    Masuk Mode Demo
   </button>
 
-  <button class="btn btn-phone" onclick="loginPhone()">Login HP</button>
+  <button class="btn btn-google" onclick="loginGoogle()">
+    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google" style="height:20px; margin-right:10px;">
+    Login via Google
+  </button>
+
+  <button class="btn btn-phone" onclick="loginPhone()">
+    Login via HP
+  </button>
 
   <div id="recaptcha-container"></div>
 </div>
@@ -54,60 +60,63 @@
   let recaptchaVerifier;
   let confirmationResult;
 
-  window.onload = function() {
-    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-      size: 'normal',
-      callback: () => { console.log('reCAPTCHA solved'); },
-      'expired-callback': () => { console.log('reCAPTCHA expired'); }
-    });
-
-    recaptchaVerifier.render().then(widgetId => {
-      console.log('reCAPTCHA widget rendered with id:', widgetId);
-    });
-  };
-
-  function loginDemo() {
-    alert("Login demo berhasil");
-    window.location.href = "game.html";
-  }
-
+  // --- FUNGSI LOGIN GOOGLE (Diletakkan di luar agar bisa dipanggil onclick) ---
   function loginGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
+
+    // Coba pake Pop-up dulu
     firebase.auth().signInWithPopup(provider)
-      .then(() => {
-        console.log("Login Google sukses, redirect ke game.html");
+      .then((result) => {
+        console.log("Sukses Login Google");
         window.location.href = "game.html";
       })
-      .catch(e => alert(e.message));
+      .catch((error) => {
+        console.error("Popup gagal, mencoba redirect...", error.message);
+        // Jika Popup diblokir browser, gunakan Redirect
+        firebase.auth().signInWithRedirect(provider);
+      });
   }
 
-  function loginPhone() {
-    const phone = prompt("Masukkan nomor HP (contoh: +628xxxx)");
-    if (!phone) return;
-
-    if (!recaptchaVerifier) {
-      alert('reCAPTCHA belum siap, silakan muat ulang halaman');
-      return;
+  // Cek hasil redirect (jika login redirect digunakan)
+  firebase.auth().getRedirectResult().then((result) => {
+    if (result && result.user) {
+      window.location.href = "game.html";
     }
+  });
+
+  // --- FUNGSI LOGIN DEMO ---
+  function loginDemo() {
+    alert("Masuk sebagai tamu...");
+    window.location.href = "game.html";
+  }
+
+  // --- FUNGSI LOGIN PHONE ---
+  function loginPhone() {
+    const phone = prompt("Masukkan nomor HP (Contoh: +62812345678)");
+    if (!phone) return;
 
     firebase.auth().signInWithPhoneNumber(phone, recaptchaVerifier)
       .then(result => {
         confirmationResult = result;
-        const otp = prompt("Masukkan kode OTP");
+        const otp = prompt("Masukkan 6 digit kode OTP");
         return confirmationResult.confirm(otp);
       })
       .then(() => {
-        console.log("Login Phone sukses, redirect ke game.html");
         window.location.href = "game.html";
       })
       .catch(error => {
-        alert(error.message);
-        recaptchaVerifier.clear();
-        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'normal' });
-        recaptchaVerifier.render();
+        alert("Gagal: " + error.message);
       });
   }
+
+  // Inisialisasi reCAPTCHA saat halaman dimuat
+  window.onload = function() {
+    recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'normal'
+    });
+    recaptchaVerifier.render();
+  };
 </script>
 
 </body>
